@@ -1,6 +1,21 @@
 //variable = section html #items
 const items = document.getElementById("items")
 
+
+launchPage()
+
+function launchPage(){
+//condition si sessionstorage existe, récupération de data
+if (sessionStorage.getItem("data") !== null) {
+  const dataSession = JSON.parse(sessionStorage.getItem("data"));
+  displayItems(dataSession)
+  // sinon appel de la fonction getData
+} 
+else {
+  getData();
+}
+}
+
 //La fonction qui va récupérer les données de l'API
 const getData = function () {
   fetch("http://localhost:3000/api/products")
@@ -13,6 +28,7 @@ const getData = function () {
       displayItems(value)
     })
 }
+
 //fonction d'affichage des element html
 function displayItems(value) {
   let displayHtml = ""
@@ -28,12 +44,4 @@ function displayItems(value) {
   }
   const sectionItem = document.getElementById("items")
   sectionItem.insertAdjacentHTML("afterbegin", displayHtml)
-}
-//condition si data déja connu, récupération des données stockées dans json
-if (sessionStorage.getItem("data") !== null) {
-  const dataSession = JSON.parse(sessionStorage.getItem("data"));
-  displayItems(dataSession)
-  // sinon appel de la fonction getData
-} else {
-  getData();
 }
