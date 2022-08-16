@@ -4,47 +4,68 @@ import { addToCart } from "./productAddLocalStorage.js";
 const urlSearchParams = new URLSearchParams(document.location.search)
 const urlId = urlSearchParams.get("id")
 
-//récupérer les données de l'article dans l'API   
+fetchDataProduct()
+
+
+function fetchDataProduct(){
 fetch(`http://localhost:3000/api/products/${urlId}`)
   // récupération des données de l'API dans response.json
   .then((response) => response.json())
-  .then((product) => handleData(product))
+  .then((data) => handleData(data))
+}
 
-//fonction gestion des données        
-function handleData({ altTxt, colors, description, imageUrl, name, price }) {
+//fonction création d'un tableau des données        
+function handleData(data){ 
+  const product= {
+    altTxt:data.altTxt,
+    colors:data.colors, 
+    description: data.description, 
+    imageUrl: data.imageUrl,
+    name: data.name,
+    price: data.price
+  }
+ selectColorList(product) 
+}
+
+function selectColorList(product){
   // créé un tableau des résultats couleur
-  const optionColor = colors.map((color) => {
+  const optionColor = product.colors.map((color) => {
     //insére les données dans la liste html  
     return `<option value="${color}">${color} </option>`
   })
   // crée et renvoie en chaine de caractère les options de couleur
   const optionColorHtml = optionColor.join("")
+  displayHtml(product, optionColorHtml)
+}
+
 
   //structure html à afficher 
-
+function displayHtml(product, optionColorHtml){
   const img = document.createElement("img")
-  img.src = imageUrl
-  img.alt = altTxt
+  img.src = product.imageUrl
+  img.alt = product.altTxt
   const divImg = document.querySelector(".item__img");
   divImg.appendChild(img);
 
   const divTitle = document.querySelector("#title")
-  divTitle.textContent += name
+  divTitle.textContent += product.name
 
   const spanPrice = document.querySelector("#price")
-  spanPrice.textContent += price
+  spanPrice.textContent += product.price
 
   const pDescription = document.querySelector("#description")
-  pDescription.textContent += description
+  pDescription.textContent += product.description
 
   const optionValue = document.querySelector("#colors")
   optionValue.innerHTML += optionColorHtml
 
+  listenButtonAdd(product)
+}
  
 
+function listenButtonAdd(product){
   // enregistrement des valeurs selectionnées au clic du bouton
   const button = document.querySelector("#addToCart")
-
   //évenement sur clic du bouton
   button.addEventListener("click", (e) => {
     e.preventDefault() //stop la propagation 
@@ -58,7 +79,7 @@ function handleData({ altTxt, colors, description, imageUrl, name, price }) {
       // création d'un objet panier pour localstorage
       const productToCart = {
         id: urlId,
-        name: name,
+        name: product.name,
         color: color,
         quantity: Number(quantity),
       }
@@ -68,5 +89,4 @@ function handleData({ altTxt, colors, description, imageUrl, name, price }) {
     }
   })
 }
-
 
