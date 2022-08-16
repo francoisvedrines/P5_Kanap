@@ -17,7 +17,7 @@ else {
 }
 
 //La fonction qui va récupérer les données de l'API
-const getData = function () {
+async function getData () {
   fetch("http://localhost:3000/api/products")
     // récupération des données de l'API dans response.json
     .then((response) => response.json())

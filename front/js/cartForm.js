@@ -16,22 +16,17 @@ function listenBuntonOrder(cart) {
 
 // fonction soumettre
 function captureForm(cart) {
-    if (cart) {
-        const form = document.querySelector(".cart__order__form");
+    const form = document.querySelector(".cart__order__form");
         // creation d'un objet des objets contact et products pour envoi au serveur
-        const contact = {
-            firstName: form.firstName.value,
-            lastName: form.lastName.value,
-            address: form.address.value,
-            city: form.city.value,
-            email: form.email.value,
-        }
-        const ids = idInCart(cart)
-        postOrder(contact, ids)
-
-    } else {
-        alert("Le panier est vide")
+    const contact = {
+        firstName: form.firstName.value,
+        lastName: form.lastName.value,
+        address: form.address.value,
+        city: form.city.value,
+        email: form.email.value,
     }
+    const ids = idInCart(cart)
+    postOrder(contact, ids)
 }
 
 //récupération des id pour renvoi dans l'objet products
@@ -51,11 +46,8 @@ function postOrder(contact, ids) {
         products: ids,
     }
     const error = []
-
     checkForm(error)
-
     //conditions de validation du formulaire avant envoi
-
     if (error != "") {
         return alert("Erreur de saisie, veuillez vérifier le formulaire")
     } else {
@@ -69,14 +61,13 @@ function postOrder(contact, ids) {
             },
             body: JSON.stringify(dataUser),
         })
-            .then((res) => res.json())
-            .then((data) => getToken(data))
-            .catch(() => {
-                alert("Une erreur est survenue, merci de revenir plus tard.");
-            })
+        .then((res) => res.json())
+        .then((data) => getToken(data))
+        .catch(() => {
+            alert("Une erreur est survenue, merci de revenir plus tard.");
+        })
     }
 }
-
 
 // fonction de récupération de l'orderId
 function getToken(data) {

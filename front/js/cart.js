@@ -5,13 +5,12 @@ import { listenBuntonOrder } from "./cartForm.js";
 //********** partie panier ************* */
 //************************************** */
 
-const sectionItem = document.getElementById("cart__items")
 const cartInLocalStorage = JSON.parse(localStorage.getItem("cart"));
 // creation variable panier
 let cart = undefined
 launchPage();
 
-//lancement des fonctions de la page si le panier est plein, sinon affichage d'un message "le panier est vide"
+//lancement des fonctions de la page si le panier est plein, sinon affichage d'un message "le panier est vide" et masquage du formulaire
 async function launchPage() {
     if (cartInLocalStorage) {
         //variable panier à l'état de tableau
@@ -20,62 +19,61 @@ async function launchPage() {
         await retrieveProducts(cartInLocalStorage, cart)
         listenBuntonOrder(cart)
     } else {
-        const sectionAlertEmpty = document.getElementById("cart__items")
+        //affichage panier vide sur la page
         const emptyCart = document.createElement("h2")
-        sectionAlertEmpty.appendChild(emptyCart)
+        document.querySelector("#cart__items").appendChild(emptyCart)
         emptyCart.textContent = "Le panier est vide."
-        listenBuntonOrder(cart)
-    }
+        // marque le formulaire de saisie et le bouton commander
+        const hideForm = document.querySelector(".cart__order")
+        hideForm.setAttribute("style","display:none")
+    }   
 }
 
 
 //récupération des donnés du localstorage pour insérer dans un tableau 
 async function retrieveProducts(cartInLocalStorage, cart) {
-    cartInLocalStorage.forEach(itemInLocalStorage => {
-        retrievePrice(itemInLocalStorage, cart)
+    cartInLocalStorage.forEach((itemInLocalStorage) => {
+
+        fetch(`http://localhost:3000/api/products/${itemInLocalStorage.id}`)
+        .then((response) => response.json())
+        .then((catalog) => {
+            cart.push({...itemInLocalStorage, price : catalog.price})
+            cart.sort((a,b)=> a.id.localeCompare(b.id)) // triage par id
+            displayItems(itemInLocalStorage ,catalog)
+            totalPriceAndQauntity(cart)
+        })
     })
 }
 
-//récupération des donnés non présentes dans le localstorage depuis l'API et insersion du prix dans le tableau cart
-function retrievePrice(itemInLocalStorage, cart) {
-    fetch(`http://localhost:3000/api/products/${itemInLocalStorage.id}`)
-    .then((response) => response.json())
-    .then((catalog) => {
-        cart.push({...itemInLocalStorage, price : catalog.price})
-        displayItems(itemInLocalStorage ,catalog)
-        totalPriceAndQauntity(cart)
-        })
-}
-
+console.log(cart);
 
 //affichage code html
-function displayItems(itemInLocalStorage, catalog) {
-   
+function displayItems(itemInLocalStorage, catalog) { 
+    const sectionItem = document.getElementById("cart__items")
     sectionItem.innerHTML +=
         `<article class="cart__item">
-    <div class="cart__item__img">
-    <img src="${catalog.imageUrl}" alt="${catalog.altTxt}">
-    </div >
-    <div class="cart__item__content">
-    <div class="cart__item__content__description">
-    <h2>${catalog.name}</h2>
-    <p>${itemInLocalStorage.color}</p>
-    <p>${catalog.price} €</p>
-    </div>
-    <div class="cart__item__content__settings">
-    <div class="cart__item__content__settings__quantity">
-    <p>Qté : </p>
-    <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${itemInLocalStorage.quantity}" data-color="${itemInLocalStorage.color}" data-id="${itemInLocalStorage.id}">
-    </div>
-    <div class="cart__item__content__settings__delete">
-    <p class="deleteItem" data-id="${itemInLocalStorage.id}" data-color="${itemInLocalStorage.color}">Supprimer </p>
-    </div>
-        </div>
-        </div>
+            <div class="cart__item__img">
+                <img src="${catalog.imageUrl}" alt="${catalog.altTxt}">
+            </div >
+            <div class="cart__item__content">
+                <div class="cart__item__content__description">
+                    <h2>${catalog.name}</h2>
+                     <p>${itemInLocalStorage.color}</p>
+                    <p>${catalog.price} €</p>
+                </div>
+                <div class="cart__item__content__settings">
+                    <div class="cart__item__content__settings__quantity">
+                    <p>Qté : </p>
+                    <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${itemInLocalStorage.quantity}" data-color="${itemInLocalStorage.color}" data-id="${itemInLocalStorage.id}">
+                </div>
+                <div class="cart__item__content__settings__delete">
+                    <p class="deleteItem" data-id="${itemInLocalStorage.id}" data-color="${itemInLocalStorage.color}">Supprimer </p>
+                </div>
+            </div>
         </article > `
 
-        changeQuantityProduct(cart , sectionItem)
-        removeProduct(cart)
+    changeQuantityProduct(cart , sectionItem)
+    removeProduct(cart)
 
 }
 
