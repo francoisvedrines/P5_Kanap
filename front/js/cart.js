@@ -6,7 +6,7 @@ import { listenBuntonOrder } from "./cartForm.js";
 //************************************** */
 
 const cartInLocalStorage = JSON.parse(localStorage.getItem("cart"));
-// creation variable panier
+// creation variable panier pour gestion des quantités
 let cart = undefined
 launchPage();
 
@@ -31,30 +31,26 @@ async function launchPage() {
 
 
 //récupération des donnés du localstorage pour insérer dans un tableau 
-function retrieveProducts(cartInLocalStorage, cart) {
-    cartInLocalStorage.sort((a,b)=> a.id > b.id ? 1 : (a.id < b.id ? -1 : 0))
-    console.log(cartInLocalStorage);
-    cartInLocalStorage.forEach((itemInLocalStorage) => {
-        console.log(itemInLocalStorage);
+async function retrieveProducts(cartInLocalStorage, cart) {
+    //tri des produits du local storage par ordre d'ID
+    cartInLocalStorage.sort((a,b)=> a.name.localeCompare(b.name))
+
+    for (const itemInLocalStorage of cartInLocalStorage) {     
+        const data = await
         fetch(`http://localhost:3000/api/products/${itemInLocalStorage.id}`)
-        .then((response) => response.json())
-        .then((catalog) => {
-            //injecte les données du local storage et complète les infos manquantes depuis l'api
-            cart.push({...itemInLocalStorage, img: catalog.imageUrl, altTxt: catalog.altTxt, price: catalog.price})
-            // tri les produits par ordre d'Id
-            cart.sort((a,b)=> a.id > b.id ? 1 : (a.id < b.id ? -1 : 0))
-            displayItems(itemInLocalStorage ,catalog)
-            totalPriceAndQauntity(cart)
-        })
-    })
+        const catalog = await data.json()
+        //injecte les données du local storage et complète les infos manquantes depuis l'api
+        cart.push({...itemInLocalStorage, ...catalog})
+        
+        displayItems(itemInLocalStorage ,catalog)
+        totalPriceAndQauntity(cart)
+    }
 }
 
-console.log(cart);
-console.log(cart[1]);
 
-//affichage code html
+//affichage produits sur page html
 function displayItems(itemInLocalStorage, catalog) { 
-    console.log(itemInLocalStorage);
+    
     const sectionItem = document.getElementById("cart__items")
     sectionItem.innerHTML +=
         `<article class="cart__item">
@@ -80,7 +76,6 @@ function displayItems(itemInLocalStorage, catalog) {
 
     changeQuantityProduct(cart , sectionItem)
     removeProduct(cart)
-
 }
 
 
@@ -90,8 +85,9 @@ function changeQuantityProduct(cart,sectionItem) {
     qtyInputs.forEach((qtyInput) => {
         // ecoute au changement de l'input
         qtyInput.addEventListener("change", (e) => {
+            //remplacement de la quantité
             const newQuantity = Number(e.target.value);
-            console.log(newQuantity);
+            
             updateCart(cartInLocalStorage, e.target.dataset.id, e.target.dataset.color, newQuantity)
             totalPriceAndQauntity(cart)
         })
@@ -102,17 +98,23 @@ function changeQuantityProduct(cart,sectionItem) {
 function removeProduct(cart) {
     const rmvItems = document.querySelectorAll(".deleteItem");
     rmvItems.forEach((itemToRmv) => {
+        //ecoute des bouton supprimer
         itemToRmv.addEventListener("click", (e) => {
             e.preventDefault();
             const itemIdForDelete = e.target.dataset.id;
             const itemColorForDelete = e.target.dataset.color;
+            // recherche de l'indes de l'article a supprimer
             const itemToDelete = cart.findIndex(
                 (product) => product.id === itemIdForDelete && product.color === itemColorForDelete)
+                //suppression de l'article dans le tableau
+                console.log(cart);
                 cart.splice(itemToDelete, 1)
+                //suppression du produit sur la page html
                 e.target.closest(".cart__item").remove()
                 alert("Article supprimé du panier.")
                 localStorage.setItem("cart", JSON.stringify(cart))
                 totalPriceAndQauntity(cart)
+                //si panier vide, effacement du local storage et raffraichissement de la page
                 if (cart.length === 0) {
                     localStorage.clear()
                     location.reload()
@@ -127,7 +129,7 @@ function totalPriceAndQauntity(cart) {
     let totalCartPrice = 0;
     let totalCartItems = 0;
     cart.forEach(item => {
-        // liste la quantité du produit
+        // récupère la quantité du produit
         const numberItem = item.quantity;
         //effectue le total sur tout le panier
         totalCartItems = totalCartItems + numberItem;
@@ -146,16 +148,17 @@ function displayTotalPriceAndQuantity(totalCartItems, totalCartPrice) {
 
 //mise à jour des données dans le localStorage
 function updateCart(cartLocalStorage, id, color, newQuantity) {
-    let product = cart.find(item => item.id === id && item.color === color)
-    if( product){
-        product.quantity=newQuantity
+    //recherche dans le panier le bon article ( id et couleur identiques )
+    const productCart = cart.find(item => item.id === id && item.color === color)
+    if( productCart){
+        //remplace la quantité déjà présente par la nouvelle quantité
+        productCart.quantity=newQuantity
     }
-    console.log(product);
-    
-    product = cartLocalStorage.find(item => item.id === id && item.color === color)
-    if( product){
-        product.quantity=newQuantity
+    // applicaion cette fois-ci dans le local storage
+    const productLocalStorage = cartLocalStorage.find(item => item.id === id && item.color === color)
+    if( productLocalStorage){
+        productLocalStorage.quantity=newQuantity
     }
     
-    return localStorage.setItem("cart", JSON.stringify(cartLocalStorage));
+    localStorage.setItem("cart", JSON.stringify(cartLocalStorage));
 }

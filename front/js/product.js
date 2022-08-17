@@ -58,10 +58,15 @@ function displayHtml(product, optionColorHtml){
 
   const optionValue = document.querySelector("#colors")
   optionValue.innerHTML += optionColorHtml
-
+  changePageTitle(product)
   listenButtonAdd(product)
 }
  
+// changement du titre de la page Html
+function changePageTitle(product){
+  const newTitle = product.name
+  document.querySelector("title").textContent = newTitle
+}
 
 function listenButtonAdd(product){
   // enregistrement des valeurs selectionnées au clic du bouton
