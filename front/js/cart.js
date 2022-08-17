@@ -114,7 +114,7 @@ function removeProduct(cart) {
                 alert("Article supprimé du panier.")
                 localStorage.setItem("cart", JSON.stringify(cart))
                 totalPriceAndQauntity(cart)
-                //si panier vide, effacement du local storage et raffraichissement de la page
+                //si panier vide, effacement du local storage et rafraichissement de la page
                 if (cart.length === 0) {
                     localStorage.clear()
                     location.reload()
@@ -154,7 +154,7 @@ function updateCart(cartLocalStorage, id, color, newQuantity) {
         //remplace la quantité déjà présente par la nouvelle quantité
         productCart.quantity=newQuantity
     }
-    // applicaion cette fois-ci dans le local storage
+    // application cette fois-ci dans le local storage
     const productLocalStorage = cartLocalStorage.find(item => item.id === id && item.color === color)
     if( productLocalStorage){
         productLocalStorage.quantity=newQuantity
