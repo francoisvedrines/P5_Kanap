@@ -16,7 +16,7 @@ async function launchPage() {
         //variable panier à l'état de tableau
         cart = []
         //récupération données dans le local storage et sur l'API pour chargement dans le tableau
-        await retrieveProducts(cartInLocalStorage, cart)
+        retrieveProducts(cartInLocalStorage, cart)
         listenBuntonOrder(cart)
     } else {
         //affichage panier vide sur la page
@@ -31,14 +31,18 @@ async function launchPage() {
 
 
 //récupération des donnés du localstorage pour insérer dans un tableau 
-async function retrieveProducts(cartInLocalStorage, cart) {
+function retrieveProducts(cartInLocalStorage, cart) {
+    cartInLocalStorage.sort((a,b)=> a.id > b.id ? 1 : (a.id < b.id ? -1 : 0))
+    console.log(cartInLocalStorage);
     cartInLocalStorage.forEach((itemInLocalStorage) => {
-
+        console.log(itemInLocalStorage);
         fetch(`http://localhost:3000/api/products/${itemInLocalStorage.id}`)
         .then((response) => response.json())
         .then((catalog) => {
-            cart.push({...itemInLocalStorage, price : catalog.price})
-            cart.sort((a,b)=> a.id.localeCompare(b.id)) // triage par id
+            //injecte les données du local storage et complète les infos manquantes depuis l'api
+            cart.push({...itemInLocalStorage, img: catalog.imageUrl, altTxt: catalog.altTxt, price: catalog.price})
+            // tri les produits par ordre d'Id
+            cart.sort((a,b)=> a.id > b.id ? 1 : (a.id < b.id ? -1 : 0))
             displayItems(itemInLocalStorage ,catalog)
             totalPriceAndQauntity(cart)
         })
@@ -46,9 +50,11 @@ async function retrieveProducts(cartInLocalStorage, cart) {
 }
 
 console.log(cart);
+console.log(cart[1]);
 
 //affichage code html
 function displayItems(itemInLocalStorage, catalog) { 
+    console.log(itemInLocalStorage);
     const sectionItem = document.getElementById("cart__items")
     sectionItem.innerHTML +=
         `<article class="cart__item">
