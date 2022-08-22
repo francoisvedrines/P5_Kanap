@@ -2,19 +2,7 @@
 const items = document.getElementById("items")
 
 
-launchPage()
-
-function launchPage(){
-//condition si sessionstorage existe, récupération de data
-if (sessionStorage.getItem("data") !== null) {
-  const dataSession = JSON.parse(sessionStorage.getItem("data"));
-  displayItems(dataSession)
-  // sinon appel de la fonction getData
-} 
-else {
   getData();
-}
-}
 
 //La fonction qui va récupérer les données de l'API
 async function getData () {
