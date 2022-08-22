@@ -49,6 +49,7 @@ function postOrder(contact, ids) {
     checkForm(error)
     //conditions de validation du formulaire avant envoi
     if (error != "") {
+        console.log(error);
         return alert("Erreur de saisie, veuillez vérifier le formulaire")
     } else {
         console.log("envoi serveur");

@@ -21,11 +21,9 @@ async function getData () {
   fetch("http://localhost:3000/api/products")
     // récupération des données de l'API dans response.json
     .then((response) => response.json())
-    .then(function (value) {
-      //stockage des données dans un json
-      sessionStorage.setItem("data", JSON.stringify(value))
-      // appel de la fonction d'affichage
-      displayItems(value)
+    .then((value) => displayItems(value))
+    .catch(() => {
+      alert("Catalogue actuellement inaccessible, merci de revenir plus tard.");
     })
 }
 
