@@ -1,15 +1,16 @@
 import { addToCart } from "./productAddLocalStorage.js";
 
-//récupération et extraction de l'id
+//récupération de l'url
 const urlSearchParams = new URLSearchParams(document.location.search)
+//extraction de l'id contenu dans l'url
 const urlId = urlSearchParams.get("id")
 
 fetchDataProduct()
 
 
 function fetchDataProduct(){
-fetch(`http://localhost:3000/api/products/${urlId}`)
-  // récupération des données de l'API dans response.json
+//requête serveur avec l'url personnalisée contenant l'id du produit choisi 
+  fetch(`http://localhost:3000/api/products/${urlId}`)
   .then((response) => response.json())
   .then((data) => handleData(data))
 }
@@ -33,7 +34,7 @@ function selectColorList(product){
     //insére les données dans la liste html  
     return `<option value="${color}">${color} </option>`
   })
-  // crée et renvoie en chaine de caractère les options de couleur
+  // crée et renvoi en chaine de caractère les options de couleur
   const optionColorHtml = optionColor.join("")
   displayHtml(product, optionColorHtml)
 }
@@ -80,6 +81,8 @@ function listenButtonAdd(product){
     //si color n'est pas renseigné
     if (color == "") {
       alert("Veuillez selectionner une couleur")
+    } else if(quantity < 1){
+      alert ("veuillez selectionner une quantité valide")
     } else {
       // création d'un objet panier pour localstorage
       const productToCart = {
