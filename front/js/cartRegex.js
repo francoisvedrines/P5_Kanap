@@ -4,6 +4,7 @@ export {checkForm}
 //************** Regex ***************** */
 //************************************** */
 
+
 //controle de conformité des données du formulaire
 function checkForm(error) {
     const regex = /^[a-z A-Z çéèà]{3,20}$/

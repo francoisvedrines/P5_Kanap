@@ -3,7 +3,7 @@ const sectionItems = document.getElementById("items");
 
 getData();
 
-//La fonction qui va récupérer les données de l'API
+//La fonction qui va récupérer les données de l'API via requête get
 async function getData () {
   fetch("http://localhost:3000/api/products")
     // récupération des données de l'API dans un fichier.json

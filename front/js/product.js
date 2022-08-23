@@ -9,10 +9,13 @@ fetchDataProduct()
 
 
 function fetchDataProduct(){
-//requête serveur avec l'url personnalisée contenant l'id du produit choisi 
+//requête serveur get avec l'url personnalisée contenant l'id du produit choisi 
   fetch(`http://localhost:3000/api/products/${urlId}`)
   .then((response) => response.json())
   .then((data) => handleData(data))
+  .catch(() => {
+    alert("Catalogue actuellement inaccessible, merci de revenir plus tard.")
+  });
 }
 
 //fonction création d'un tableau des données        
@@ -81,8 +84,8 @@ function listenButtonAdd(product){
     //si color n'est pas renseigné
     if (color == "") {
       alert("Veuillez selectionner une couleur")
-    } else if(quantity < 1){
-      alert ("veuillez selectionner une quantité valide")
+    } else if(quantity < 1 || quantity >100){
+      alert ("veuillez selectionner une quantité valide ou inferieur à 100")
     } else {
       // création d'un objet panier pour localstorage
       const productToCart = {

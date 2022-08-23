@@ -7,7 +7,7 @@ import { listenBuntonOrder } from "./cartForm.js";
 
 const cartInLocalStorage = JSON.parse(localStorage.getItem("cart"));
 // creation variable panier pour gestion des quantités
-let cart = undefined
+let cart;
 launchPage();
 
 //lancement des fonctions de la page si le panier est plein, sinon affichage d'un message "le panier est vide" et masquage du formulaire
@@ -17,7 +17,7 @@ async function launchPage() {
         cart = []
         //récupération données dans le local storage et sur l'API pour chargement dans le tableau
         retrieveProducts(cartInLocalStorage, cart)
-        listenBuntonOrder(cart)
+        listenBuntonOrder(cart) 
     } else {
         //affichage panier vide sur la page
         const emptyCart = document.createElement("h2")
@@ -73,7 +73,6 @@ function displayItems(itemInLocalStorage, catalog) {
                 </div>
             </div>
         </article > `
-
     changeQuantityProduct(cart , sectionItem)
     removeProduct(cart)
 }
@@ -81,20 +80,35 @@ function displayItems(itemInLocalStorage, catalog) {
 
 //changement de la quantité des articles
 function changeQuantityProduct(cart,sectionItem) {
+    //selection des inputs quantité
     const qtyInputs = sectionItem.querySelectorAll(".itemQuantity");
+    //selection du bouton commander
     qtyInputs.forEach((qtyInput) => {
         // ecoute au changement de l'input
         qtyInput.addEventListener("change", (e) => {
             //remplacement de la quantité
             const newQuantity = Number(e.target.value);
-            
-            updateCart(cartInLocalStorage, e.target.dataset.id, e.target.dataset.color, newQuantity)
-            totalPriceAndQauntity(cart)
+            //bouton commander pour masquage
+            const hideButton = document.querySelector(".cart__order__form__submit")
+            if(newQuantity < 1 || newQuantity >100){
+                alert ("veuillez selectionner une quantité valide ou inferieur à 100")
+                //masque le bouton commander pour empécher la commande
+                hideButton.setAttribute("style","display:none")
+                document.querySelector("#totalQuantity").textContent="Erreur, vérifier la quantité des "
+                document.querySelector("#totalPrice").textContent=""
+            }else{
+                // réaffiche le bouton commander 
+                hideButton.setAttribute("style","display:true")
+                updateCart(cartInLocalStorage, e.target.dataset.id, e.target.dataset.color, newQuantity)
+                totalPriceAndQauntity(cart) 
+            }
         })
     })
 }
+    
 
-//bouton de supression article
+
+//bouton de supression article 
 function removeProduct(cart) {
     const rmvItems = document.querySelectorAll(".deleteItem");
     rmvItems.forEach((itemToRmv) => {
@@ -123,7 +137,6 @@ function removeProduct(cart) {
         })
 }
 
-
 //calcul du total des articles et du prix final
 function totalPriceAndQauntity(cart) {
     let totalCartPrice = 0;
@@ -150,12 +163,14 @@ function displayTotalPriceAndQuantity(totalCartItems, totalCartPrice) {
 function updateCart(cartLocalStorage, id, color, newQuantity) {
     //recherche dans le panier le bon article ( id et couleur identiques )
     const productCart = cart.find(item => item.id === id && item.color === color)
+    //et dans le localstorage
+    const productLocalStorage = cartLocalStorage.find(item => item.id === id && item.color === color)
+
     if( productCart){
         //remplace la quantité déjà présente par la nouvelle quantité
         productCart.quantity=newQuantity
     }
     // application cette fois-ci dans le local storage
-    const productLocalStorage = cartLocalStorage.find(item => item.id === id && item.color === color)
     if( productLocalStorage){
         productLocalStorage.quantity=newQuantity
     }
