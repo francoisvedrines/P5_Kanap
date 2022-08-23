@@ -1,9 +1,13 @@
+//************************************** */
+//********** partie formulaire ********* */
+//********** de la page panier ********* */
+//************************************** */
+
+
 import { checkForm } from "./cartRegex.js";
 export {listenBuntonOrder};
 
-//************************************** */
-//******** partie formulaire *********** */
-//************************************** */
+
 
 //ecoute du bouton pour activer fonction soumettre au clic
 function listenBuntonOrder(cart) {

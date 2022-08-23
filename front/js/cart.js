@@ -1,9 +1,10 @@
+//************************************** */
+//************ page panier ************* */
+//************************************** */
+
 import { listenBuntonOrder } from "./cartForm.js";
 
 
-//************************************** */
-//********** partie panier ************* */
-//************************************** */
 
 const cartInLocalStorage = JSON.parse(localStorage.getItem("cart"));
 // creation variable panier pour gestion des quantités

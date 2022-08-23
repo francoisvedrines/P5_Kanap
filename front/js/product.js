@@ -1,3 +1,8 @@
+//************************************** */
+//********** page produit ************** */
+//************************************** */
+
+
 import { addToCart } from "./productAddLocalStorage.js";
 
 //récupération de l'url

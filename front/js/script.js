@@ -1,3 +1,8 @@
+//************************************** */
+//*********** page accueil ************* */
+//************************************** */
+
+
 //variable = section #items dans la page html
 const sectionItems = document.getElementById("items");
 

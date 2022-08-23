@@ -1,3 +1,7 @@
+//************************************** */
+//********* page confirmation ********** */
+//************************************** */
+
 const orderId = getOrderId()
 displayOrderId(orderId)
 
