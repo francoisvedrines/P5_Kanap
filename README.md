@@ -11,7 +11,7 @@ Node.js doit être installé sur le poste.
 
 ### Installation du Back-end  ###
 
-Cloner ce repo. Depuis le dossier 'back', taper la commande `npm install, puis lancer le serveur avec `node server`. 
+Cloner ce repo. Depuis le dossier 'back', taper la commande `npm install`, puis lancer le serveur avec `node server`. 
 
 ### Installation du Front-end  ###
 
